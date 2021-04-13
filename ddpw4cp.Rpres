@@ -1,0 +1,79 @@
+Developing Data Products - Week 4 Assignment
+========================================================
+author: Chris Payne
+date: 13th April 2021
+autosize: true
+
+Online Two Sample T Test with plot
+========================================================
+
+Have YOU ever wanted a quick online tool where you can just upload your two sample files and 
+get back a nice density plot representation and the t.test output?
+
+Then this is the tool for you!
+
+The Problem
+========================================================
+You have two samples
+
+But how to do a bit of quick analysis and visualization without out all that tedious mucking about in RStudio?
+***
+
+```{r, echo = FALSE}
+library(ggplot2)
+library(gridExtra)
+set.seed(13042021)
+sample1 <- rnorm(0:100,3,4)
+sample2 <- rnorm(-5:98,2,3)
+plot1 <- qplot(sample1)
+plot2 <- qplot(sample2)
+grid.arrange(plot1, plot2, ncol=2)
+```
+
+
+
+The Solution
+========================================================
+
+```{r, echo=FALSE}
+# Convert into data.frames and add a sample column (a or b)
+            sample1 <- data.frame(measure=sample1,sample=c('a'))
+            sample2 <- data.frame(measure=sample2,sample=c('b'))
+            
+            # Add column names
+            colnames(sample1) <- c('measure','sample')
+            colnames(sample2) <- c('measure','sample')
+   
+            # Combine data.fames into a single data frame for plotting
+            samples <- rbind(sample1, sample2)
+            colnames(samples) <- c('measure','sample')
+            
+            # Perform t.test and store output
+            my.t.test <- t.test(measure ~ sample, data=samples,  alternative = "two.sided", var.equal = FALSE)
+           
+            # Plot densities
+            ggplot(samples, aes(measure, fill=sample)) + 
+                geom_density(alpha = 0.2) +
+                geom_vline(xintercept = mean(sample1$measure), color="red") +
+                geom_vline(xintercept = mean(sample2$measure), color="blue") +
+                geom_text(mapping = aes(x = mean(sample1$measure),
+                                        y = 0,
+                                        label = "A mean", vjust = -1)) +                                    
+                geom_text(mapping = aes(x = mean(sample2$measure),
+                                        y = 0,
+                                        label = "B mean", vjust = -1)) 
+```
+***
+```{r, echo=FALSE}
+             print(my.t.test)
+```
+
+Next Steps
+========================================================
+Save this link in your favourites NOW!!!
+
+https://chris101.shinyapps.io/ddpw4cp/
+
+Check out the code here:
+https://github.com/chris-payne101/DDPW4CP/tree/master/ddpw4cp
+
